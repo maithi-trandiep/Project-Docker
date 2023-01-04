@@ -1,0 +1,73 @@
+version: '1'
+
+services:
+   # service sql
+  database:
+    image: 'mysql:latest'
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'db'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD : 'password'
+    ports:
+      - '3306:3306'
+    volumes:
+      - ./database:/var/lib/mysql
+
+  #Les service PHP sont crée avec des Dockerfile
+  php1:
+    build: ./dockerfiles
+    container_name: server_php_1
+    restart: always
+    ports:
+      - '9000:80'
+    volumes:
+      - './src1:/var/www'
+    depends_on:
+      - database
+
+  php2:
+      build: ./dockerfiles
+      container_name: server_php_2
+      restart: always
+      ports:
+        - '9001:80'
+      volumes:
+        - './src2:/var/www'
+      depends_on:
+        - database
+
+  nginx1:
+      image: nginx:latest
+      restart: always
+      ports:
+        - '80:80'
+      volumes:
+        - './.docker/nginx1:/etc/nginx/conf.d'
+        - './src1:/var/www'
+  
+  nginx2:
+      image: nginx:latest
+      restart: always
+      ports:
+        - '81:80'
+      volumes:
+        - './.docker/nginx2:/etc/nginx/conf.d'
+        - './src2:/var/www/'
+          
+  #Adminer
+  adminer:
+    image: adminer
+    restart: always
+    depends_on:
+      - database
+    ports:
+     - 8080:8080
+    environment:
+      MYSQL_DATABASE: 'db'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+
+volumes:
+  database:
