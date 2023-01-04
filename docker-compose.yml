@@ -21,7 +21,7 @@ services:
     container_name: server_php_1
     restart: always
     ports:
-      - '9000:80'
+      - '9000:9000'
     volumes:
       - './src1:/var/www'
     depends_on:
@@ -32,11 +32,12 @@ services:
       container_name: server_php_2
       restart: always
       ports:
-        - '9001:80'
+        - '9001:9000'
       volumes:
         - './src2:/var/www'
       depends_on:
         - database
+
 
   nginx1:
       image: nginx:latest
@@ -54,8 +55,8 @@ services:
         - '81:80'
       volumes:
         - './.docker/nginx2:/etc/nginx/conf.d'
-        - './src2:/var/www/'
-          
+        - './src2:/var/www'
+
   #Adminer
   adminer:
     image: adminer
