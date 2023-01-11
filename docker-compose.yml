@@ -15,26 +15,28 @@ services:
     volumes:
       - ./database:/var/lib/mysql
 
+  node:
+    image: node
+    volumes:
+      - './src1:/app'
+    command: 'npm install'
+
   #Les service PHP sont crée avec des Dockerfile
   php1:
     build: ./dockerfiles
-    container_name: server_php_1
     restart: always
-    ports:
-      - '9000:9000'
     volumes:
       - './src1:/var/www'
+    command: 'php artisan key:generate; php artisan migrate:fresh --seed'
     depends_on:
       - database
 
   php2:
       build: ./dockerfiles
-      container_name: server_php_2
       restart: always
-      ports:
-        - '9001:9000'
       volumes:
         - './src2:/var/www'
+      command: 'php artisan key:generate; php artisan migrate:fresh --seed'
       depends_on:
         - database
 
